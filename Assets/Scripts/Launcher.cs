@@ -9,6 +9,7 @@ public class Launcher : MonoBehaviour
     private Rigidbody2D rb2d;
     private bool gravityEnabled = false;
     private CameraFollow cameraFollowScript;
+    
     // Variables for double-click detection
     private bool isDoubleClick = false;
     private float doubleClickTime = 0.3f;
@@ -32,6 +33,7 @@ public class Launcher : MonoBehaviour
                 if (!gravityEnabled)
                 {
                     EnableGravity();
+                    rb2d.bodyType = RigidbodyType2D.Dynamic; //change body type to dynamic
 
                     // Activate the CameraFollow script
                     cameraFollowScript.isActive = true;
@@ -73,7 +75,7 @@ public class Launcher : MonoBehaviour
 
     void EnableGravity()
     {
-        rb2d.gravityScale = 1; // Enable gravity when double-clicking the "Trigger"
+        rb2d.gravityScale = 2; // Enable gravity when double-clicking the "Trigger"
         gravityEnabled = true;
     }
 }

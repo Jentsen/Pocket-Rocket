@@ -7,7 +7,6 @@ public class HeightDisplay : MonoBehaviour
 {
     public Transform springTransform;  // Reference to the "Spring" object's Transform.
     public Text heightText;  // Reference to the Text UI element.
-
     void Update()
     {
         if (springTransform != null && heightText != null)
