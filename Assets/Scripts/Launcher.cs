@@ -4,23 +4,76 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviour
 {
-    // private Rigidbody rb;
+    public float jump = 2f;
+    
     private Rigidbody2D rb2d;
-    public float jump = 10;
-    // Start is called before the first frame update
+    private bool gravityEnabled = false;
+    private CameraFollow cameraFollowScript;
+    // Variables for double-click detection
+    private bool isDoubleClick = false;
+    private float doubleClickTime = 0.3f;
+    private float lastClickTime = 0f;
+
     void Start()
     {
-        // rb = GetComponent<Rigidbody>();
         rb2d = GetComponent<Rigidbody2D>();
+        rb2d.gravityScale = 0; // Disable gravity initially
+
+        // Find the CameraFollow script attached to the camera object
+        cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetMouseButtonDown(0))
         {
-            // rb.AddForce(Vector3.up * jump, ForceMode.Impulse);
+            if (IsDoubleClick())
+            {
+                if (!gravityEnabled)
+                {
+                    EnableGravity();
+
+                    // Activate the CameraFollow script
+                    cameraFollowScript.isActive = true;
+                }
+                LaunchObject();
+            }
+        }
+    }
+
+    bool IsDoubleClick()
+    {
+        float currentTime = Time.time;
+        if (currentTime - lastClickTime <= doubleClickTime)
+        {
+            isDoubleClick = true;
+        }
+        else
+        {
+            isDoubleClick = false;
+        }
+
+        lastClickTime = currentTime;
+        return isDoubleClick;
+    }
+
+    void LaunchObject()
+    {
+        // Check if the mouse is hovering over the "Trigger" object
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Collider2D hitCollider = Physics2D.OverlapPoint(mousePosition);
+
+        if (hitCollider != null && hitCollider.gameObject.CompareTag("Trigger"))
+        {
+            // Launch the object upwards
+            EnableGravity();
             rb2d.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
         }
+    }
+
+    void EnableGravity()
+    {
+        rb2d.gravityScale = 1; // Enable gravity when double-clicking the "Trigger"
+        gravityEnabled = true;
     }
 }

@@ -6,16 +6,9 @@ public class DragDrop : MonoBehaviour
 {
     GameObject objSelected = null;
 
-    public Dictionary<string, GameObject> snapPoints = new Dictionary<string, GameObject>();
+    public GameObject[] snapPoints;
     public float snapSensitivity = 2.0f;
 
-    void Start()
-    {
-        // Fill the snapPoints dictionary with your outlines.
-        snapPoints["Barrel"] = GameObject.Find("o_Barrel");
-        snapPoints["Trigger"] = GameObject.Find("o_Trigger");
-        snapPoints["Spring"] = GameObject.Find("o_Spring");
-    }
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -48,16 +41,16 @@ public class DragDrop : MonoBehaviour
             objSelected = hit2D.transform.gameObject;
         }
 
-        if (objSelected == null)
-        {
-            Debug.Log("object selected: " + objSelected);
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                objSelected = hit.transform.gameObject;
-            }
-        }
+        // if (objSelected == null)
+        // {
+        //     Debug.Log("object selected: " + objSelected);
+        //     RaycastHit hit;
+        //     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //     if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        //     {
+        //         objSelected = hit.transform.gameObject;
+        //     }
+        // }
     }
 
     void DragObject()
@@ -71,48 +64,24 @@ public class DragDrop : MonoBehaviour
         }
     }
 
-    // void DropObject()
-    // {        
-    //     //snap code
-    //     for(int i = 0; i < snapPoints.Length; i++)
-    //     {
-
-    //         if(Vector3.Distance(snapPoints[i].transform.position, objSelected.transform.position) < snapSensitivity)
-    //         {
-    //             if(snapPoints[i].name == "barrel_outline")
-    //             {
-    //                 objSelected.transform.position = new Vector3(snapPoints[i].transform.position.x, snapPoints[i].transform.position.y, snapPoints[i].transform.position.z + 0.1f);
-    //             }
-    //             else
-    //             {
-    //                 objSelected.transform.position = new Vector3(snapPoints[i].transform.position.x, snapPoints[i].transform.position.y, snapPoints[i].transform.position.z + 0.1f);
-    //             }
-    //         }
-    //     }
-    //     objSelected = null;
-    // }
     void DropObject()
     {
-        string objectName = objSelected.name;
-        string outlineName;
-
-        if (objectToOutlineMapping.TryGetValue(objectName, out outlineName))
+        for (int i = 0; i < snapPoints.Length; i++)
         {
-            for (int i = 0; i < snapPoints.Length; i++)
+            if (Vector3.Distance(snapPoints[i].transform.position, objSelected.transform.position) < snapSensitivity)
             {
-                if (snapPoints[i].name == outlineName)
+                if (snapPoints[i].name == "o_Barrel" && objSelected.name == "Barrel")
                 {
-                    float distance = Vector3.Distance(snapPoints[i].transform.position, objSelected.transform.position);
-
-                    if (distance < snapSensitivity)
-                    {
-                        objSelected.transform.position = new Vector3(
-                            snapPoints[i].transform.position.x,
-                            snapPoints[i].transform.position.y,
-                            snapPoints[i].transform.position.z + 0.1f
-                        );
-
-                    }
+                    objSelected.transform.position = new Vector3(snapPoints[i].transform.position.x, snapPoints[i].transform.position.y, snapPoints[i].transform.position.z + 0.1f);
+                    Debug.Log("barrel snapped");
+                }
+                else if (snapPoints[i].name == "o_Trigger" && objSelected.name == "Trigger")
+                {
+                    objSelected.transform.position = new Vector3(snapPoints[i].transform.position.x, snapPoints[i].transform.position.y, snapPoints[i].transform.position.z + 0.1f);
+                }
+                else if (snapPoints[i].name == "o_Spring" && objSelected.name == "Spring")
+                {
+                    objSelected.transform.position = new Vector3(snapPoints[i].transform.position.x, snapPoints[i].transform.position.y, snapPoints[i].transform.position.z + 0.1f);
                 }
             }
         }
